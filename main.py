@@ -1,5 +1,5 @@
-import telebot
-bot = telebot.TeleBot("905266572:AAF0hAMoP01I2Vx-diR7_mgyhFw0NT4XWHI")
+#import telebot
+#bot = telebot.TeleBot("905266572:AAF0hAMoP01I2Vx-diR7_mgyhFw0NT4XWHI")
 # bot.send_message(1149221538, "Hello")
 
 # upd = bot.get_updates()
@@ -19,8 +19,8 @@ bot = telebot.TeleBot("905266572:AAF0hAMoP01I2Vx-diR7_mgyhFw0NT4XWHI")
 
 #print(answear)
 
-@bot.message_handler(commands=["start"])
-def handler_start(message):
+#@bot.message_handler(commands=["start"])
+#def handler_start(message):
      user_markup = telebot.types.ReplyKeyboardMarkup()
      user_markup.row("/start","/stop")
      user_markup.row("fsdfag", "photo")
