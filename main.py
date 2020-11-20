@@ -1,69 +1,65 @@
+import COVID19Py
+from telebot import types
 import telebot
 
-from telebot import types
-
-bot = telebot.TeleBot("905266572:AAF0hAMoP01I2Vx-diR7_mgyhFw0NT4XWHI")
-
-
+covid19 = COVID19Py.COVID19()
+bot = telebot.TeleBot('1453562215:AAEzET3P8qhTpWM9E7Zz-cFFq-SAKBzCXUs')
 
 @bot.message_handler(commands=['start'])
-def welcome(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton("Поговорим?")
-    item2 = types.KeyboardButton("Сыграем?")
+def start(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    item1 = types.KeyboardButton('Во всём мире')
+    item2 = types.KeyboardButton('Украина')
+    item3 = types.KeyboardButton('Россия')
+    item4 = types.KeyboardButton('Беларусь')
+    item5 = types.KeyboardButton('Казахстан')
+    item6 = types.KeyboardButton('Италия')
+    item7 = types.KeyboardButton('Франция')
+    item8 = types.KeyboardButton('Германия')
+    item9 = types.KeyboardButton('Япония')
+    item10 = types.KeyboardButton('Китай')
+    markup.add(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10)
 
-    markup.add(item1, item2)
-
-    bot.send_message(message.chat.id,"Добро пожаловать, {0.first_name}!\nЯ - <b>{1.first_name}</b>, бот созданный чтобы быть твоим другом."
-                    .format(message.from_user, bot.get_me()),
-                    parse_mode='html', reply_markup=markup)
-
-
+    send_message = f"<b>Привет, {message.from_user.first_name}!</b>\nЧтобы узнать данные по коронавирусу напишите " \
+                   f"название страны, например: США, Украина, Россия и так далее."
+    bot.send_message(message.chat.id, send_message, parse_mode='html', reply_markup=markup)
 
 @bot.message_handler(content_types=['text'])
-def lalala(message):
-    if message.text == 'Сыграем?':
-        markup = types.InlineKeyboardMarkup(row_width=2)
-        item5 = types.InlineKeyboardButton("Давай", callback_data='yes1')
+def mess(message):
+    final_message = ""
+    get_message_bot = message.text.strip().lower()
+    if get_message_bot == "сша":
+        location = covid19.getLocationByCountryCode("US")
+    elif get_message_bot == "украина":
+        location = covid19.getLocationByCountryCode("UA")
+    elif get_message_bot == "россия":
+        location = covid19.getLocationByCountryCode("RU")
+    elif get_message_bot == "беларусь":
+        location = covid19.getLocationByCountryCode("BY")
+    elif get_message_bot == "казакхстан":
+        location = covid19.getLocationByCountryCode("KZ")
+    elif get_message_bot == "италия":
+        location = covid19.getLocationByCountryCode("IT")
+    elif get_message_bot == "франция":
+        location = covid19.getLocationByCountryCode("FR")
+    elif get_message_bot == "германия":
+        location = covid19.getLocationByCountryCode("DE")
+    elif get_message_bot == "япония":
+        location = covid19.getLocationByCountryCode("JP")
+    elif get_message_bot == "китай":
+        location = covid19.getLocationByCountryCode("CN")
+    else:
+        location = covid19.getLatest()
+        final_message = f"<u>Данные по всему миру:</u>\n<b>Заболевшие: </b>{location['confirmed']}\n"
 
-        markup.add(item5)
+    if final_message == "":
+        date = location[0]['last_updated'].split("T")
+        time = date[1].split(".")
+        final_message = f"<u>Данные по стране:</u>\nНаселение: {location[0]['country_population']:,}\n" \
+                        f"Последнее обновление: {date[0]} {time[0]}\nПоследние данные:\n<b>" \
+                        f"Заболевших: </b>{location[0]['latest']['confirmed']:,}\n<b>Сметрей: </b>" \
+                        f"{location[0]['latest']['deaths']:,}"
 
-        bot.send_message(message.chat.id, 'Сыграем?', reply_markup=markup)
+    bot.send_message(message.chat.id, final_message, parse_mode='html')
 
-
-    if message.text == "сахар":
-        bot.send_message(message.chat.id, 'Молодец, правильно')
-    if message.chat.type == 'private':
-        if message.text == 'Поговорим?':
-            bot.send_message(message.chat.id, "Привет")
-            markup = types.InlineKeyboardMarkup(row_width=2)
-            item3 = types.InlineKeyboardButton("Хорошо", callback_data='good')
-            item4 = types.InlineKeyboardButton("Плохо", callback_data='bad')
-
-            markup.add(item3, item4)
-
-            bot.send_message(message.chat.id, 'Как дела?', reply_markup=markup)
-
-
-        @bot.callback_query_handler(func=lambda call: True)
-        def callback_inline(call):
-            try:
-                if call.message:
-                    if call.data == 'good':
-                        bot.send_message(call.message.chat.id, 'Вот и отличненько')
-                    if call.data == 'bad':
-                        bot.send_message(call.message.chat.id, 'Держи, не грусти 🎂')
-                if call.message:
-                    if call.data == 'yes1':
-                        bot.send_message(call.message.chat.id,
-                                         'Отгадай загадку, Белый снег есть у всех, в рот попадает в миг пропадает')
-
-
-
-            except Exception as e:
-                print(repr(e))
-
-
-# RUN
-bot.polling(none_stop=True)
 bot.polling(none_stop=True)
